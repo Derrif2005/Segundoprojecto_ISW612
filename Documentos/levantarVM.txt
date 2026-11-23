@@ -1,0 +1,49 @@
+PASOS PARA LEVANTAR EL CHAT
+
+1. Encendé la VM de Ubuntu y esperá a que aparezca ServerUbunto login:.
+
+2. En PowerShell de Windows, abrí el túnel SSH:
+
+ssh -N -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -L 127.0.0.1:8443:127.0.0.1:443 -p 2222 derri@127.0.0.1
+
+3. Dejá esa ventana abierta y entrá a:
+
+   https://127.0.0.1:8443/
+
+   Si carga el chat, ya está listo.
+
+4. Si no carga, abrí otro PowerShell y conectate a Ubuntu:
+
+   ssh -p 2222 derri@127.0.0.1
+
+5. Dentro de Ubuntu, comprobá el disco, los servicios y HTTPS:
+
+   findmnt --mountpoint /srv/ia
+   systemctl is-active nginx isw612-chat ollama
+   curl -k -I https://127.0.0.1/
+
+6. Si el disco no aparece montado o hay servicios inactivos, ejecutá
+   este bloque en Ubuntu:
+
+   if ! mountpoint -q /srv/ia; then
+     sudo udevadm settle
+     sudo mount /srv/ia
+   fi
+
+   findmnt --mountpoint /srv/ia &&
+   sudo systemctl start ollama isw612-chat nginx &&
+   systemctl is-active nginx isw612-chat ollama &&
+   curl -k -I https://127.0.0.1/
+
+   El resultado esperado es tres active y HTTP 200.
+
+   Si el montaje dice que no existe el dispositivo por UUID, ejecutá:
+
+   lsblk -f
+
+   Si falta el disco de 25 GiB, revisá que esté conectado en VirtualBox.
+   No lo formateés: contiene los modelos y la base de datos.
+
+7. Si Ubuntu devuelve HTTP 200 pero Windows sigue sin abrir la página,
+   cerrá el túnel anterior con Ctrl+C si todavía está abierto. Volvé a
+   ejecutar el comando del paso 2 y recargá el navegador.
