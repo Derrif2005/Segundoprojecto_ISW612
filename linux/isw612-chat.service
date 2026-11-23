@@ -1,0 +1,16 @@
+[Unit]
+Description=Chat PHP ISW-612
+RequiresMountsFor=/srv/ia/app
+After=ollama.service
+[Service]
+User=isw612-chat
+Group=isw612-chat
+WorkingDirectory=/opt/isw612-chat
+Environment=CHAT_DB=/srv/ia/app/chat.sqlite
+Environment=CHAT_MODEL=qwen2.5:1.5b
+ExecStart=/usr/bin/php -S 127.0.0.1:8000 -t /opt/isw612-chat/app/public
+Restart=on-failure
+UMask=0027
+NoNewPrivileges=true
+[Install]
+WantedBy=multi-user.target

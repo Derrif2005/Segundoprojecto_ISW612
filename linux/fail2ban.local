@@ -1,0 +1,4 @@
+# Lee los fallos de SSH desde el journal.
+[sshd]
+enabled = true
+backend = systemd
